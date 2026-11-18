@@ -64,12 +64,26 @@ function exportReview(id){download('MTH028-review-'+id+'.md',packet(state.attemp
 function exportChapter(sec){let aa=state.attempts.filter(a=>get(a.topic).sec===sec);if(!aa.length)return toast('此节还没有提交记录');download('MTH028-section-'+sec+'.md',packet(aa),'text/markdown');toast('章节过程已导出，请附到聊天中复核。')}
 let readerReturn='#sources',readerDoc=null,readerPage=1;
 function openMaterial(id,page=1){let d=MATERIALS.find(x=>x.id===id);if(!d)return toast('未找到资料，请通过助手报错。');readerReturn=location.hash;readerDoc=d;readerPage=Math.min(Math.max(1,Math.trunc(Number(page))||1),d.pages.length||1);if(state.active)markAssisted();showReader()}
-function showReader(){document.querySelector('#material-reader')?.remove();let d=readerDoc,el=document.createElement('dialog');el.id='material-reader';el.className='material-reader';el.innerHTML=`<div class="reader-top"><div><b>${esc(d.name)}</b><small>${esc(d.filename)}</small></div><button onclick="document.querySelector('#material-reader').close()">关闭 · 返回原位置 ×</button></div><div class="actions">${d.pages.length?`<button onclick="readerMove(-1)" ${readerPage===1?'disabled':''}>上一页</button><label>第 <input aria-label="资料页码" type="number" min="1" max="${d.pages.length}" value="${readerPage}" onchange="readerGoto(this.value)"> / ${d.pages.length} 页</label><button onclick="readerMove(1)" ${readerPage===d.pages.length?'disabled':''}>下一页</button>`:''}${d.downloads.map(x=>`<a class="button" href="${esc(x.url)}" download target="_blank" rel="noopener">${esc(x.label)}</a>`).join('')}${d.chunks?`<button onclick="downloadLarge('${d.id}',this)">下载完整原始 PDF</button>`:''}</div>${d.pages.length?`<div class="reader-canvas"><img src="${d.pages[readerPage-1].image}" alt="${esc(d.name)} 第 ${readerPage} 页原文"><details><summary>本页可检索文本（公式以原图为准）</summary><pre>${esc(d.pages[readerPage-1].text||'此页以扫描图片为主，请查看上方原文。')}</pre></details></div>`:`<pre>${esc(d.text)}</pre>`}`;document.body.append(el);el.showModal();el.addEventListener('close',()=>el.remove())}
+function showReader(){document.querySelector('#material-reader')?.remove();let d=readerDoc,el=document.createElement('dialog');el.id='material-reader';el.className='material-reader';el.innerHTML=`<div class="reader-top"><div><b>${esc(d.name)}</b><small>${esc(d.filename)}</small></div><button onclick="document.querySelector('#material-reader').close()">关闭 · 返回原位置 ×</button></div><div class="actions">${d.pages.length?`<button onclick="readerMove(-1)" ${readerPage===1?'disabled':''}>上一页</button><label>PDF 第 <input aria-label="资料页码" type="number" min="1" max="${d.pages.length}" value="${readerPage}" onchange="readerGoto(this.value)"> / ${d.pages.length} 页</label><button onclick="readerMove(1)" ${readerPage===d.pages.length?'disabled':''}>下一页</button>`:''}${d.downloads.map(x=>`<a class="button" href="${esc(x.url)}" download target="_blank" rel="noopener">${esc(x.label)}</a>`).join('')}${d.chunks?`<button onclick="downloadLarge('${d.id}',this)">下载完整原始 PDF</button>`:''}</div>${d.pages.length?`<div class="reader-canvas"><img src="${d.pages[readerPage-1].image}" alt="${esc(d.name)} 第 ${readerPage} 页原文"><details><summary>本页可检索文本（公式以原图为准）</summary><pre>${esc(d.pages[readerPage-1].text||'此页以扫描图片为主，请查看上方原文。')}</pre></details></div>`:`<pre>${esc(d.text)}</pre>`}`;document.body.append(el);el.showModal();el.addEventListener('close',()=>el.remove())}
 function readerGoto(n){readerPage=Math.min(readerDoc.pages.length,Math.max(1,Math.trunc(Number(n))||1));showReader()}
 function readerMove(n){readerGoto(readerPage+n)}
 async function downloadLarge(id,btn){let d=MATERIALS.find(x=>x.id===id);btn.disabled=true;btn.textContent='正在准备完整文件…';try{let parts=[];for(let path of d.chunks){let r=await fetch(path);if(!r.ok)throw Error('下载失败');parts.push(await r.arrayBuffer())}download(d.filename,new Blob(parts,{type:'application/pdf'}),'application/pdf');btn.textContent='已下载'}catch(e){toast('下载未完成，请重试。');btn.textContent='重试下载'}finally{btn.disabled=false}}
 function libraryPage(){const indexed=new Set(QUESTION_INDEX.map(q=>q.source));const summary=MATERIALS.map(d=>({name:d.name,n:QUESTION_INDEX.filter(q=>q.source===d.id).length}));return head('COURSE LIBRARY','资料与出处','每条题目保留原题图、资料名称和页码。打开资料后，关闭阅读器会返回当前题目。')+`<section class="card"><p>期中范围为 §1.1–1.5、§1.7–1.9、§2.1–2.3、§2.8。</p><p id="library-count">题库共 ${QUESTION_INDEX.length} 条。已从 ${indexed.size} 份资料抽取题目，另有 ${MATERIALS.length-indexed.size} 份资料作为讲义、反馈或未编号补充材料保留原文。</p><input id="library-search" aria-label="搜索资料" placeholder="搜索 Lecture、Assignment、Quiz 或原文关键词" oninput="filterLibrary(this.value)"><div id="library-list">${libraryRows('')}</div></section>`}
-function libraryRows(search){return MATERIALS.filter(d=>(d.name+d.filename+d.pages.map(p=>p.text).join(' ')+(d.text||'')).toLowerCase().includes(search.toLowerCase())).map(d=>{let hit=search?d.pages.findIndex(p=>p.text.toLowerCase().includes(search.toLowerCase())):-1;const count=QUESTION_INDEX.filter(q=>q.source===d.id).length;const state=count?`题库已收录 ${count} 条`:'作为资料阅读';return `<div class="source-item"><h3><button class="source-link" onclick="openMaterial('${d.id}',${hit<0?1:hit+1})">${esc(d.name)} ↗</button></h3><p>${d.pages.length?d.pages.length+' 页':'文本资料'}${hit>=0?' · 原文命中第 '+(hit+1)+' 页':''} · ${state}</p><small>${esc(SOURCES.find(s=>s.id===d.id)?.note||'原文件已收录。')}</small></div>`}).join('')||'<p>没有匹配的资料。</p>'}
+function libraryRows(search = '') {
+  const query = search.trim().toLowerCase();
+  const rows = [];
+  for (const doc of MATERIALS) {
+    const nameMatch = (doc.name + ' ' + doc.filename).toLowerCase().includes(query);
+    const hit = query ? doc.pages.findIndex(page => page.text.toLowerCase().includes(query)) : -1;
+    if (!nameMatch && hit < 0 && !(doc.text || '').toLowerCase().includes(query)) continue;
+    const count = QUESTION_INDEX.filter(q => q.source === doc.id).length;
+    const matchedPage = hit < 0 ? '' : `<button class="source-link" onclick="openMaterial('${doc.id}',${hit+1})">打开匹配的 PDF 第 ${hit+1} 页</button>`;
+    rows.push(`<div class="source-item"><h3><button class="source-link" onclick="openMaterial('${doc.id}',1)">${esc(doc.name)} ↗</button></h3>
+      <p>${doc.pages.length ? 'PDF 共 ' + doc.pages.length + ' 页' : '文本资料'} · ${count ? '题库已收录 ' + count + ' 条' : '作为资料阅读'}</p>
+      ${matchedPage}<small>${esc(SOURCES.find(s=>s.id===doc.id)?.note || '原文件已收录。')}</small></div>`);
+  }
+  return rows.join('') || '<p>没有匹配的资料。</p>';
+}
 function filterLibrary(v){document.querySelector('#library-list').innerHTML=libraryRows(v)}
 const GLOSSARY=[
 ['c','c 是什么 / 0=c','这里的小写 c 是一个数，表示消元后某一行的右端项，不是掌握状态 C。例如 0x₁+0x₂=c 简写成 0=c。c 可以为零或不为零；接下来由你判断等式何时成立。它不是新增的未知数。'],
@@ -82,7 +96,24 @@ const GLOSSARY=[
 ['rref','RREF / 简化行阶梯形','RREF 是 reduced row echelon form。除阶梯形条件外，每个主元是 1，且是所在列唯一的非零项。']
 ];
 let helperContext=null;
-function currentContext(){let [page,id]=location.hash.slice(1).split('/');if(page==='questions'){const q=QUESTION_INDEX[Number(id??(state.lastQuestion??readStored('mth028-last-question')))];if(q){const source=MATERIALS.find(m=>m.id===q.source);return {route:location.hash,title:source.name+' · 第 '+q.page+' 页 · '+q.number,section:'',question:[q.label,...q.images.map(path=>new URL(path,location.href).href)].join('\n'),draft:questionStudyRecord(q).draft||'',answers:{},at:Date.now()};}}let a=page==='result'?state.attempts.find(a=>a.id===id):state.active,t=a?get(a.topic):get(id);return {route:location.hash,topic:t?.id||null,section:t?.sec||'',title:t?.name||'资料 / 全站',attempt:a?.id||null,question:a?Engine.generate(a.topic,a.seed,a.level).prompt:'',draft:a?.free||'',answers:a?{...a.answers}:{},at:Date.now()}}
+function currentContext(){
+ const [page,rawID]=location.hash.slice(1).split('/');
+ let id=rawID||'';try{id=decodeURIComponent(id)}catch{id=''}
+ if(page==='questions'){
+  let stored;try{stored=localStorage.getItem('mth028-last-question')}catch{}
+  const index=Math.max(0,Math.min(QUESTION_INDEX.length-1,Math.trunc(Number(rawID??state.lastQuestion??stored))||0)),q=QUESTION_INDEX[index];
+  if(q){const source=MATERIALS.find(m=>m.id===q.source);return {route:location.hash,topic:null,title:(source?.name||q.source)+' · 第 '+q.page+' 页 · '+q.number,section:'',question:[q.label,...q.images.map(path=>new URL(path,location.href).href)].join('\n'),draft:questionStudyRecord(q).draft||'',answers:{},at:Date.now()};}
+ }
+ // A draft only supplies the context on its own training/result screen.
+ // Reading another topic must keep that topic's sources and helper context.
+ const a=page==='result'?state.attempts.find(a=>a.id===id):page==='train'?state.active:null;
+ let t=a?get(a.topic):['learn','example','evidence'].includes(page)?get(id):null;
+ if(page==='session'){
+  const units=TOPICS.filter(t=>t.sec===id),index=state.study?.visits?.[id]??0;
+  t=Number.isInteger(index)&&index>=0?units[index]||units[0]:null;
+ }
+ return {route:location.hash,topic:t?.id||null,section:t?.sec||(page==='session'?id:''),title:t?.name||(page==='session'?id+' · 整课':'资料 / 全站'),attempt:a?.id||null,question:a?Engine.generate(a.topic,a.seed,a.level).prompt:'',draft:a?.free||'',answers:a?{...a.answers}:{},at:Date.now()};
+}
 function openHelper(mode='ask'){helperContext=currentContext();document.querySelector('#study-helper')?.remove();let e=document.createElement('dialog');e.id='study-helper';e.className='study-helper';e.innerHTML=`<div class="row"><h2>学习助手</h2><button onclick="document.querySelector('#study-helper').close()" aria-label="关闭助手">×</button></div><p class="muted">${esc(helperContext.section?'§'+helperContext.section+' · ':'')}${esc(helperContext.title)} · 自动附带当前题目</p><div class="actions"><button onclick="helperTab('ask')">符号与提问</button><button onclick="helperTab('report')">报错 / 建议</button><button onclick="helperTab('history')">我的记录</button></div><div id="helper-content"></div>`;document.body.append(e);e.showModal();e.addEventListener('close',()=>e.remove());helperTab(mode)}
 function helperTab(mode){let el=document.querySelector('#helper-content');if(mode==='history'){el.innerHTML=`<p>记录保存在本机，尚未自动发送。导出后附到聊天中，我才能看到并处理。</p><button onclick="exportIssues()">导出全部疑问与报错</button>${(state.notes||[]).filter(n=>n.kind).slice().reverse().map(n=>`<section class="card"><b>${esc(n.kind)} · ${esc(n.section)} · ${esc(n.status||'待处理')}</b><p>${esc(n.message)}</p><small>${stamp(n.at)}</small><button onclick="resolveIssue('${n.id}')">${n.status==='已解决'?'重新打开':'标记已解决'}</button></section>`).join('')||'<p>还没有记录。</p>'}`;return}el.innerHTML=(mode==='ask'?`<p>常见符号直接查看；开放问题可连同题目一起导出。这里不是实时 AI 对话。</p><div>${GLOSSARY.map(g=>`<details><summary>${g[1]}</summary><p>${g[2]}</p></details>`).join('')}</div>`:'<p>不必抄题号。会附上章节、题目、当前作答和所在页面。</p>')+`<label for="helper-message">${mode==='ask'?'你的疑问':'错误现象 / 改进建议'}</label><textarea id="helper-message" placeholder="例如：我不明白为什么这里要设参数" oninput="state.helperDraft=this.value;save()"></textarea><div class="actions"><button class="primary" onclick="saveIssue('${mode==='ask'?'学习疑问':'报错建议'}')">保存记录</button><button onclick="saveIssue('${mode==='ask'?'学习疑问':'报错建议'}',true)">保存并导出给 ChatGPT</button></div>`;document.querySelector('#helper-message').value=state.helperDraft||readStored('mth028-helper-draft')||''}
 function saveIssue(kind,exportNow=false){let message=document.querySelector('#helper-message').value.trim();if(!message)return toast('请先写下疑问或错误。');let n={...helperContext,kind,message,status:'待处理',id:newID()};state.notes.push(n);save();state.helperDraft='';removeStored('mth028-helper-draft');save();if(exportNow)exportIssues([n]);helperTab('history');toast('已保存到本机，未自动发送。')}
@@ -91,7 +122,22 @@ function exportIssues(notes=state.notes.filter(n=>n.kind)){download('MTH028-ques
 function installEnhancements(){let b=document.createElement('button');b.id='helper-launcher';b.textContent='? 提问 / 报错';b.onclick=()=>openHelper();document.body.append(b)}
 installEnhancements();
 
-function sourcePage(id){let topic=currentContext().topic;let pages={systems:{l1:8},rowops:{l1:21},rref:{l2:4},free:{l2:15},multiply:{l7:13},transpose:{l7:21},imt:{l8:14}};return pages[topic]?.[id]||1;}
+function sourcePage(id,topicID=currentContext().topic){
+ // All values are 1-based physical pages verified against the original PDFs.
+ const pages={
+  systems:{l1:8,review:2},rowops:{l1:21,review:2},
+  rref:{l2:6,review:3},free:{l2:15,review:3},
+  span:{l3:4,review:4},axb:{l3:9,review:5},
+  homogeneous:{l4:5,review:6},param:{l4:9,review:6},
+  independent:{l5:4,review:7},linear:{l5:18,review:8},
+  standard:{l6:8,review:9},onto:{l6:18,review:9},
+  multiply:{l7:13,review:10},transpose:{l7:21,l6:44,review:10},
+  inverse:{l8:4,review:11},elementary:{l8:9,review:11},imt:{l8:15,review:12},
+  subspace:{extra27:6,review:13},col:{extra27:16,review:13},null:{extra27:10,review:13},
+  dimension:{review:13}
+ };
+ return pages[topicID]?.[id]||1;
+}
 // Opening a substantive explanation is assistance, not an independent attempt.
 document.addEventListener('toggle',e=>{if(e.target.tagName==='DETAILS'&&e.target.open&&e.target.closest('#study-helper')&&state.active){markAssisted()}},true);
 

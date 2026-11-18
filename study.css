@@ -101,3 +101,8 @@ a.study-line:hover,.course-row:hover{background:var(--accent-soft)}
  .study-art{padding:12px 16px}
 }
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;scroll-behavior:auto!important;transition-duration:.01ms!important}}
+
+.book-navigation,.book-navigation form{display:flex;align-items:center;gap:.55rem;flex-wrap:wrap}
+.book-navigation{margin:0 0 .8rem;color:var(--ink)}
+.book-navigation form{margin:0}.book-navigation label{display:flex;align-items:center;gap:.4rem}
+.material-reader .book-navigation input{width:7.5em}

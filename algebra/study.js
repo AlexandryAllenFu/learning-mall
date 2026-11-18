@@ -56,7 +56,8 @@ function sessionPage(sec){
   const content = units.map((t,i)=>{
     const passed = state.attempts.filter(a=>a.topic===t.id&&a.grade.passed).sort((a,b)=>a.at-b.at);
     const revisit=passed.length>1&&passed.at(-1).at-passed[0].at>=86400000;
-    const source=t.src.filter(id=>/^l\d+$/.test(id));
+    const additional={subspace:['extra27'],col:['extra27'],null:['extra27'],transpose:['l6']};
+    const source=[...new Set([...t.src.filter(id=>/^l\d+$/.test(id)),...(additional[t.id]||[])])];
     const context=(LESSON_CONTEXT[sec]?.units||[])[i];
     return `<section id="unit-${i}" class="lesson-unit" data-unit="${i}">
       <p class="unit-tag">${esc(t.section||sessionLabel(t.sec))}</p><h2>${esc(t.name)}</h2>
@@ -65,7 +66,7 @@ function sessionPage(sec){
       <ol>${t.method.filter(x=>x!==t.core&&x!=='写出运算依据和所需条件，再检查结果。').map(x=>`<li>${esc(x)}</li>`).join('')}</ol>
       <p class="lesson-caution"><b>检查：</b>${esc(t.trap)}</p>
       <h3>典型例题</h3><pre>${esc(t.example)}</pre><p class="worked" lang="${calculus?'en':'zh-CN'}">${esc(t.answer)}</p>
-      <div class="actions lesson-source">${(source.length?source:t.src.slice(0,1)).map(id=>materialAction(id,id==='l'+sec.slice(1)?t.page:undefined)).join('')}
+      <div class="actions lesson-source">${(source.length?source:t.src.slice(0,1)).map(id=>materialAction(id,sourcePage(id,t.id))).join('')}
       <a href="#learn/${t.id}">知识点详情</a></div>
       <details><summary>${state.read[t.id]?'已读':'未标记已读'} · ${revisit?'间隔复测通过':passed.length?'独立通过':'查看掌握记录'}</summary>
       ${badges(t.id,true)}<a href="#evidence/${t.id}">查看原始作答证据</a></details>
@@ -81,7 +82,7 @@ function sessionPage(sec){
 
 function materialAction(id, page=1){
   const item=MATERIALS.find(m=>m.id===id);
-  return item?`<button class="source-link" onclick="openMaterial('${id}',${Number(page)||1})">${esc(item.name)}${page>1?' · p.'+page:''}</button>`:'';
+  return item?`<button class="source-link" onclick="openMaterial('${id}',${Number(page)||1})">${esc(item.name)}${page>1?' · PDF 第 '+page+' 页':''}</button>`:'';
 }
 function completeLesson(encoded){
   const sec=decodeSection(encoded);
