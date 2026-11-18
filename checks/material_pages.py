@@ -76,9 +76,11 @@ def visible_folios(page: fitz.Page) -> list[str]:
             for span in spans:
                 token = span['text'].strip()
                 x0,y0,x1,y1 = span['bbox']
-                if span['size'] < 10 or not (y1 < height*.11 or y0 > height*.94):
+                if span['size'] < 10 or not (y1 < height*.11 or y0 > height*.91):
                     continue
                 if y1 < height*.11 and not (x1 < width*.30 or x0 > width*.70):
+                    continue
+                if y0 > height*.91 and (span['size'] < 10.5 or not (x1 < width*.25 or x0 > width*.75)):
                     continue
                 if re.fullmatch(r'(?:[AI]-\d+|\d{1,3}|[ivxlcdm]{1,6})',token):
                     candidates.append(token)

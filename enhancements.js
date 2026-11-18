@@ -16,8 +16,10 @@ let readerReturn='#sources',readerDoc=null,readerPage=1;
 function openMaterial(id,page=1){let d=MATERIALS.find(x=>x.id===id);if(!d)return toast('未找到资料，请通过助手报错。');readerReturn=location.hash;readerDoc=d;readerPage=Math.min(Math.max(1,Math.trunc(Number(page))||1),d.pages.length||1);if(state.active){state.active.assisted=true;save()}showReader()}
 function bookPageControls(page) {
   if (!readerDoc.pages.some(p => p.printedPage)) return '';
-  const label = page.text ? '书本页 ' + esc(page.printedPage)
-    : page.printedPage ? '书本页序 ' + esc(page.printedPage) + '（原书空白页）' : '原书空白页';
+  const pageLabel = readerPage <= 4 || !page.text ? '书本页序 ' : '书本页 ';
+  const label = page.printedPage
+    ? pageLabel + esc(page.printedPage) + (page.text ? '' : '（原书空白页）')
+    : '原书空白页';
   return `<div class="book-navigation"><span>${label}</span>
     <form onsubmit="return jumpToPrintedPage(event)">
       <label>跳到书本页 <input name="folio" aria-label="书本页码" placeholder="如 33、A-1" required></label>
