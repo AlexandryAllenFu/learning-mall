@@ -1,6 +1,6 @@
 const courseInfo = document.body.dataset.course === 'MTH026'
-  ? {code:'MTH026', name:'微积分学习室', other:'MTH028', url:'https://mth028-evidence.quartzgrant2.chatgpt.site', art:'从割线到切线'}
-  : {code:'MTH028', name:'线性代数学习室', other:'MTH026', url:'https://mth026-evidence.quartzgrant2.chatgpt.site', art:'看见矩阵变换'};
+  ? {code:'MTH026', name:'微积分学习室', other:'MTH028', url:'./algebra/', art:'从割线到切线'}
+  : {code:'MTH028', name:'线性代数学习室', other:'MTH026', url:'./', art:'看见矩阵变换'};
 const calculus = courseInfo.code === 'MTH026';
 const sessions = [...new Set(TOPICS.map(t=>t.sec))];
 const themeTitles = {
