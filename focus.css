@@ -1,0 +1,32 @@
+.focus-today {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  width: 100%;
+  margin: 0 0 1rem;
+  padding: 1rem clamp(1rem, 3vw, 1.5rem);
+  border: 1px solid var(--line);
+  border-inline-start: 4px solid var(--green);
+  border-radius: 16px;
+  background: white;
+  color: var(--ink);
+  text-align: start;
+}
+a.focus-today:hover, button.focus-today:hover { background: var(--accent-soft); }
+.focus-today strong, .focus-today small { display: block; }
+.focus-today strong { font-size: 1.1rem; }
+.focus-today small { margin-top: .2rem; color: var(--muted); }
+.focus-today .focus-cta { color: var(--green); font-weight: 650; }
+.focus-card { max-width: 50rem; margin: 1rem 0; }
+.focus-card pre { white-space: pre-wrap; overflow-wrap: anywhere; }
+.focus-actions { display: flex; flex-wrap: wrap; align-items: center; gap: .6rem; margin-top: 1rem; }
+.focus-card :is(button, .button), .focus-today button { min-height: 44px; }
+.focus-card :is(input, select, textarea) { max-width: 100%; }
+.focus-answer { margin: 1rem 0; }
+.focus-summary { padding: .85rem 1rem; border-radius: 12px; background: var(--accent-soft); }
+@media (max-width: 600px) {
+  .focus-card :is(input, select, textarea) { font-size: 1rem; }
+  .focus-today { gap: .75rem; flex-wrap: wrap; }
+  .focus-actions > * { max-width: 100%; }
+}
