@@ -1,7 +1,7 @@
 function examAnswer(q){return q.english;}
 function objectUI(q,a){return '';}
 function freeReview(a,q){
-  return `<section class="card"><h3>书写核对与导出</h3><ul><li>写清定义域、极限方向或所用定理的条件。</li><li>保留从原式到结论的关键等号。变化率要写单位。</li><li>结尾逐项回答英文题干所求。</li></ul><button onclick="exportReview('${a.id}')">导出本题过程供逐行批改</button></section>`;
+  return `<section class="card"><h3>书写核对与导出</h3><ul><li>写清定义域、极限方向或所用定理的条件。</li><li>保留从原式到结论的关键等号。变化率要写单位。</li><li>结尾逐项回答英文题干所求。</li></ul><button data-attempt="${esc(a.id)}" onclick="exportReview(this.dataset.attempt)">导出本题过程供逐行批改</button></section>`;
 }
 function quiz3Lesson(id){
   const lecture=get(id)?.sec;

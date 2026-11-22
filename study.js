@@ -163,6 +163,7 @@ function nextPage(){
   const route=urgent?taskLink(urgent):state.active?'#train':due.length?'#review':sessionPath(sec);
   const label=urgent?'打开任务':state.active?'继续作答':due.length?'查看到期复测':last?'继续上课':'开始上课';
   return `<div class="today-title"><h1>今天</h1><label>学习时间 <select onchange="study().minutes=Number(this.value);save();render()">${[15,25,45,60,90,120].map(n=>`<option value="${n}" ${study().minutes===n?'selected':''}>${n} 分钟</option>`).join('')}</select></label></div>
+    ${FocusPractice.today()}
     <section class="study-hero"><div class="hero-study-copy"><p class="unit-tag">${urgent?'当前优先':state.active?'已保存草稿':due.length?'复习到期':sessionLabel(sec)}</p>
       <h2>${esc(title)}</h2><p>${urgent?(urgent.status==='todo'?'截止 '+stamp(urgent.due):taskLabels[urgent.status]):state.active?'从上次作答的位置继续。':due.length?'完成一次独立复测，检查上次的漏洞。':'完整讲解、典型例题和课后训练。'}</p>
       <a class="button primary" href="${route}">${label} <span aria-hidden="true">→</span></a></div>${mathArt()}</section>
@@ -204,8 +205,9 @@ function practicePage(){
 render = function(){
   const [raw='',value='']=location.hash.slice(1).split('/');
   const page=raw||'next';
-  const section=({'next':'next','deadlines':'next','course':'course','session':'course','map':'course','learn':'course','example':'course','practice':'practice','questions':'practice','train':'practice','result':'practice','review':'practice','sources':'sources'})[page];
-  const pages={course:coursePage,session:()=>sessionPage(decodeURIComponent(value)),practice:practicePage};
+  const section=({'next':'next','focus':'next','deadlines':'next','course':'course','session':'course','map':'course','learn':'course','example':'course','practice':'practice','questions':'practice','train':'practice','result':'practice','review':'practice','sources':'sources'})[page];
+  const pages={focus:()=>FocusPractice.page(value),course:coursePage,session:()=>sessionPage(decodeURIComponent(value)),practice:practicePage};
+  if (state.study?.focus && ['learn','example','session','sources','questions','result','evidence'].includes(page)) FocusPractice.markHelp();
   if(pages[page]){
     if(state.active&&page==='session'){state.active.assisted=true;save();}
     app.innerHTML=pages[page]();
@@ -381,7 +383,7 @@ settingsPage=function(){
 };
 window.addEventListener('storage',e=>{
   if(e.key!==KEY||!e.newValue)return;
-  try{const value=JSON.parse(e.newValue);if(value?.version===1&&value.course===courseInfo.code){state=value;render();}}catch{}
+  try{const value=JSON.parse(e.newValue);if(value?.version===1&&value.course===courseInfo.code){state=value;if(state.study?.focus)state.study.focus=FocusPractice.clean(state.study.focus);render();}}catch{}
 });
 window.addEventListener('hashchange',()=>{
   if(location.hash.startsWith('#deadlines/')&&location.hash!=='#deadlines/new'){
@@ -391,6 +393,7 @@ window.addEventListener('hashchange',()=>{
 function restoreStudyState(data){
   if(!data||typeof data!=='object')return;
   const local=study();
+  if(data.focus)local.focus=FocusPractice.merge(local.focus,data.focus);
   if([15,25,45,60,90,120].includes(data.minutes))local.minutes=data.minutes;
   for(const sec of sessions){
     const index=data.visits?.[sec], max=TOPICS.filter(t=>t.sec===sec).length;
