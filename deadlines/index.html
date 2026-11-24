@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="referrer" content="no-referrer">
+  <meta name="theme-color" content="#f7f8fb">
+  <title>全部课程 DDL · Learning Mall</title>
+  <link rel="stylesheet" href="planner.css">
+  <script defer src="../deadline-calendar.js"></script>
+  <script defer src="planner.js"></script>
+</head>
+<body>
+  <header class="site-header"><nav aria-label="学习室导航"><a class="brand" href="../">Learning Mall</a><a href="../#next">微积分</a><a href="../algebra/#next">线性代数</a><a href="./" aria-current="page">全部课程 DDL</a></nav></header>
+  <main>
+    <div class="intro">
+      <div><h1>全部课程 DDL</h1><p>把作业、考试和注册事项放在一张表里。时间统一显示为北京时间。</p></div>
+      <button type="button" class="primary" id="add-task">添加任务</button>
+    </div>
+
+    <section class="overview" aria-label="任务进度">
+      <article class="progress-card"><h2>整体进度</h2><p id="completion-count">等待载入</p><progress id="completion" value="0" max="1" aria-label="已完成任务比例"></progress></article>
+      <article class="priority-card"><h2>下一件事</h2><p id="first-task">等待载入</p><small id="first-time"></small></article>
+    </section>
+    <section id="reminders" aria-labelledby="reminders-title" hidden>
+      <h2 id="reminders-title">需要留意</h2>
+      <ul id="reminder-list"></ul>
+    </section>
+
+    <section class="list-panel" aria-labelledby="task-title">
+      <div class="list-header">
+        <h2 id="task-title">截止一览</h2>
+        <div class="filters"><label>课程<select id="course-filter"><option value="">全部课程</option></select></label>
+        <label>状态<select id="status-filter"><option value="open">待完成</option><option value="all">全部</option><option value="done">已完成</option></select></label></div>
+      </div>
+      <div id="empty" class="empty" hidden><p id="empty-message"></p></div>
+      <div id="table-wrap" hidden>
+        <table aria-label="所有课程任务与截止日期">
+          <thead><tr><th scope="col">任务 / 课程</th><th scope="col">截止时间</th><th scope="col">建议完成</th><th scope="col">提前提醒</th><th scope="col">状态</th></tr></thead>
+          <tbody id="rows"></tbody>
+        </table>
+      </div>
+      <div class="export">
+        <button type="button" id="calendar-export" disabled>导出日历提醒 (.ics)</button>
+        <p>将文件导入手机或电脑的日历，可在网站关闭后接收日历提醒。导入后请确认日历的提醒权限和时间。</p>
+      </div>
+    </section>
+
+    <section class="sources" aria-labelledby="sources-title">
+      <h2 id="sources-title">导入学校任务</h2>
+      <p>新任务只保存在此浏览器。下方学校入口使用各自的官方登录。</p>
+      <div class="source-links">
+        <a href="https://core.xjtlu.edu.cn/calendar/view.php?view=month" target="_blank" rel="noopener noreferrer"><strong>Learning Mall CORE ↗</strong><small>课程日历与作业</small></a>
+        <a href="https://ebridge.xjtlu.edu.cn/" target="_blank" rel="noopener noreferrer"><strong>eBridge ↗</strong><small>课表、考试与注册信息</small></a>
+        <a href="https://mail.xjtlu.edu.cn/" target="_blank" rel="noopener noreferrer"><strong>西浦邮箱 ↗</strong><small>查看课程通知与改期邮件</small></a>
+      </div>
+      <form id="import-form">
+        <label>来源<select name="source"><option value="core">CORE</option><option value="ebridge">eBridge</option><option value="mail">学校邮箱</option><option value="manual">其他日历或清单</option></select></label>
+        <label>课程（可选）<input name="course" maxlength="80" placeholder="例如 EAP102"></label>
+        <label>日历或表格文件<input type="file" name="file" accept=".ics,.csv,text/calendar,text/csv" required></label>
+        <button type="submit">预览导入</button>
+      </form>
+      <details><summary>支持的导入格式</summary>
+        <p>在 CORE 日历选择包含全课程的时间范围，导出 .ics 文件后导入。再用各课程公告和 eBridge 核对有无漏项或改期。</p>
+        <p>只有网页或邮件文字时，可逐条添加，也可整理为 CSV。CSV 表头为 <code>course,title,due,type</code>。北京时间例子为 <code>2027-01-08 17:00</code>，仅有日期时填 <code>2027-01-08</code>。类型可填 <code>assignment</code>、<code>project</code>、<code>exam</code>、<code>admin</code> 或留空。</p>
+      </details>
+    </section>
+    <p class="notice" id="notice" role="status" aria-live="polite"></p>
+  </main>
+
+  <dialog id="task-dialog" aria-labelledby="edit-title">
+    <form id="task-form"><h2 id="edit-title">添加任务</h2>
+      <div class="edit-grid">
+        <label class="wide">任务名称<input name="title" required maxlength="160"></label>
+        <label>课程<input name="course" maxlength="80" placeholder="例如 EAP102"></label>
+        <label>类型<select name="kind"><option value="assignment">作业 / 随堂测验</option><option value="exam">考试</option><option value="project">报告 / 项目</option><option value="admin">注册 / 行政</option></select></label>
+        <label>截止日期（北京时间）<input type="date" name="day" required></label>
+        <label>截止时刻（可留空）<input type="time" name="clock"></label>
+        <label>预计用时（分钟）<input type="number" name="minutes" min="5" max="10080" step="1" placeholder="按任务类型估算"></label>
+        <label>来源<select name="source"><option value="manual">手动记录</option><option value="core">CORE</option><option value="ebridge">eBridge</option><option value="mail">学校邮箱</option></select></label>
+      </div>
+      <p class="fine">仅有日期时会标注时刻待确认，按该日开始前完成来预留时间。</p>
+      <div class="dialog-actions"><button type="button" data-close>取消</button><button class="primary" type="submit">保存任务</button></div>
+    </form>
+  </dialog>
+
+  <dialog id="import-dialog" aria-labelledby="import-title">
+    <h2 id="import-title">核对导入内容</h2>
+    <p id="import-summary"></p>
+    <ul id="import-preview"></ul>
+    <div class="dialog-actions"><button type="button" data-close>取消</button><button type="button" class="primary" id="confirm-import">导入任务</button></div>
+  </dialog>
+  <noscript>开启 JavaScript 后可在此浏览器整理截止任务。</noscript>
+</body>
+</html>

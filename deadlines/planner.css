@@ -1,0 +1,90 @@
+:root {
+  color-scheme: light;
+  --background: #f7f8fb;
+  --paper: #fff;
+  --ink: #1c2537;
+  --muted: #49566d;
+  --line: #dce2ed;
+  --blue: #164cb1;
+  font: 16px/1.55 system-ui, -apple-system, "PingFang SC", "Microsoft Yahei", sans-serif;
+}
+*, *::before, *::after { box-sizing: border-box }
+[hidden] { display: none !important }
+body { margin: 0; background: var(--background); color: var(--ink); overflow-wrap: anywhere }
+.site-header { border-bottom: 1px solid var(--line); background: var(--paper) }
+nav { max-width: 1280px; margin: auto; padding: .65rem clamp(1rem, 4vw, 2.5rem); display: flex; flex-wrap: wrap; gap: .4rem 1.2rem; align-items: center }
+nav a { padding: .28rem 0; color: var(--muted); text-decoration: none }
+nav a[aria-current], nav a.brand { font-weight: 720; color: var(--ink) }
+nav a.brand { margin-right: auto }
+a { color: var(--blue) }
+a:hover { text-decoration: underline }
+main { max-width: 1280px; margin: auto; padding: 2.1rem clamp(1rem, 4vw, 2.5rem) 3rem }
+h1, h2, p { margin: 0 }
+h1 { font-size: clamp(2rem, 5vw, 3.3rem); letter-spacing: -.045em }
+h2 { font-size: 1.2rem }
+.intro { display: flex; align-items: center; justify-content: space-between; gap: 1rem; flex-wrap: wrap; margin-bottom: 1.5rem }
+.intro p, small, .fine { color: var(--muted) }
+.overview { display: grid; grid-template-columns: 1fr 1.35fr; gap: .9rem; margin-bottom: 1.25rem }
+.overview article, .sources, .list-panel, #reminders { border: 1px solid var(--line); border-radius: 18px; background: var(--paper) }
+.overview article, .sources, #reminders { padding: 1rem 1.15rem }
+.overview p { margin: .35rem 0 }
+.overview .priority-card { background: #edf3ff }
+progress { display: block; width: 100%; accent-color: var(--blue); height: 10px }
+#reminders { margin-bottom: 1.25rem; background: #fff7e7 }
+#reminders ul { margin: .35rem 0 0; padding-left: 1.4rem }
+.list-header, .export { padding: .9rem 1.15rem; display: flex; align-items: center; flex-wrap: wrap; gap: .7rem 1.25rem }
+.list-header { justify-content: space-between }
+.filters { display: flex; gap: .6rem; flex-wrap: wrap }
+label { display: grid; gap: .18rem; font-size: .87rem; color: var(--muted); min-width: 0 }
+button, select, input { font: inherit; min-height: 42px; background: var(--paper); color: var(--ink); border: 1px solid #aebad0; border-radius: 9px; padding: .4rem .7rem; max-width: 100% }
+button { cursor: pointer; font-weight: 650 }
+button:hover:not(:disabled) { background: #eaf0fc }
+button:disabled { cursor: default; opacity: .55 }
+button.primary { background: var(--blue); color: #fff; border-color: var(--blue) }
+button.primary:hover { background: #123d8e }
+:focus-visible { outline: 3px solid #3771dc; outline-offset: 3px }
+table { width: 100%; border-collapse: collapse; font-variant-numeric: tabular-nums }
+th, td { text-align: left; border-top: 1px solid var(--line); padding: .8rem .75rem; vertical-align: top }
+th:first-child, td:first-child { width: 34%; padding-inline-start: 1.15rem }
+th:last-child, td:last-child { padding-inline-end: 1.15rem }
+th { color: var(--muted); background: #f7f9fe; font-size: .875rem }
+td small, td time, .source-links small { display: block }
+td time { font-size: .88rem }
+td strong { display: block }
+.row-actions { display: flex; flex-wrap: wrap; gap: .3rem; align-items: center; margin-top: .35rem }
+.row-actions button { padding: .22rem .5rem; font-size: .82rem; min-height: 36px }
+.tag { display: inline-block; background: #ebf0fa; border-radius: 7px; font-size: .82rem; padding: .18rem .45rem }
+.tag[data-tone="urgent"] { background: #ffeadf; color: #8b2a14 }
+.tag[data-tone="done"] { background: #e4f5ec; color: #125438 }
+.export { border-top: 1px solid var(--line) }
+.export p, .empty { color: var(--muted); font-size: .91rem }
+.empty { padding: 1rem 1.15rem 1.4rem }
+.sources { margin-top: 1.25rem }
+.sources > p, details p { color: var(--muted); margin-top: .4rem }
+.source-links { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: .7rem; margin: .8rem 0 }
+.source-links a { display: block; padding: .65rem; border: 1px solid var(--line); border-radius: 10px; text-decoration: none }
+.source-links a:hover { background: #f3f6fd }
+#import-form { display: flex; flex-wrap: wrap; align-items: end; gap: .7rem }
+details { margin-top: .8rem }
+summary { cursor: pointer; color: var(--blue) }
+.notice { min-height: 1.6em; margin-top: .8rem }
+dialog { width: min(540px, calc(100% - 24px)); max-height: 90dvh; border: 1px solid var(--line); border-radius: 16px; background: var(--paper); color: var(--ink); padding: 1.2rem; box-shadow: 0 12px 40px #10204033 }
+dialog::backdrop { background: #14213c66 }
+.dialog-actions { display: flex; gap: .5rem; justify-content: flex-end; margin-top: 1rem }
+.edit-grid { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: .65rem; margin: .7rem 0 }
+.edit-grid .wide { grid-column: 1/-1 }
+#import-preview { max-height: 35vh; overflow: auto; padding-left: 1.3rem }
+@media (max-width: 760px) {
+  .overview, .source-links { grid-template-columns: 1fr }
+  table, tbody, tr, td { display: block }
+  thead { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%) }
+  tr { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); padding: .65rem 1.15rem; gap: .35rem .6rem; border-top: 1px solid var(--line) }
+  td, td:first-child, td:last-child { border: 0; width: auto; padding: .25rem 0 }
+  td:first-child { grid-column: 1/-1 }
+  td[data-label]::before { content: attr(data-label); color: var(--muted); display: block; font-size: .76rem }
+  .filters { width: 100% }
+  .filters label { flex: 1 }
+}
+
+.import-row { grid-template-columns: auto 1fr; align-items: center; gap: .6rem }
+.import-row input { min-height: auto; width: 1.15rem; height: 1.15rem; accent-color: var(--blue) }
