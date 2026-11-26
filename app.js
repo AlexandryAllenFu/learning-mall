@@ -97,6 +97,7 @@ async function restore(file){
 
 function render(){let [page='next',id]=location.hash.slice(1).split('/');if(!page)page='next';if(state.active&&['learn','example','result','sources','questions','evidence'].includes(page)){markAssisted();}document.querySelectorAll('nav a').forEach(a=>a.classList.toggle('active',a.hash==='#'+page));app.innerHTML=page==='deadlines'?deadlinesPage():page==='questions'?questionBrowser(id):page==='next'?nextPage():page==='map'?mapPage():page==='learn'?lessonPage(id):page==='example'?lessonPage(id,true):page==='train'?training():page==='result'?resultPage(id):page==='review'?reviewPage():page==='evidence'?evidencePage(id):page==='sources'?libraryPage():page==='settings'?settingsPage():nextPage();renderMatrices(app);document.querySelector('#answerform')?.addEventListener('submit',e=>{e.preventDefault();submit()});tick();}
 function tick(){let el=document.querySelector('#timer');if(!el||!state.active)return;let a=state.active,elapsed=Math.max(0,Math.floor((Date.now()-a.started)/1000)),secs=a.timed?Math.max(0,a.limit-elapsed):elapsed;el.textContent=(a.timed?'剩余 ':'已用 ')+Math.floor(secs/60)+':'+String(secs%60).padStart(2,'0');if(a.timed&&elapsed>a.limit)el.textContent='已超时 · 可提交诊断';}
-window.addEventListener('hashchange',()=>{render();window.scrollTo(0,0)});setInterval(tick,1000);render();
+window.addEventListener('hashchange',()=>{render();window.scrollTo(0,0)});
+setInterval(tick,1000);
 
 function report(){download("MTH028-all-review.md",packet(state.attempts),"text/markdown")}
