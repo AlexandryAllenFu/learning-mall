@@ -20,7 +20,9 @@ const taskLink = task => '#deadlines/'+safeID(task.id);
 const deadlineDashboard = location.protocol === 'file:'
   ? 'https://alexandryallenfu.github.io/learning-mall/deadlines/'
   : '../deadlines/';
-document.getElementById('deadline-dashboard')?.setAttribute('href', deadlineDashboard);
+for (const link of document.querySelectorAll('#deadline-dashboard, #personal-ddl')) {
+  link.href = deadlineDashboard;
+}
 const isPending = task => ['todo','submitted','review'].includes(task.status);
 const studyPreviousRender = render;
 const studyPreviousStart = start;
