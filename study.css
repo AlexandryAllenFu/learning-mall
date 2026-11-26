@@ -90,7 +90,7 @@ a.study-line:hover,.course-row:hover{background:var(--accent-soft)}
  aside{position:fixed!important;inset:auto 0 0!important;z-index:15;width:100%;height:auto;padding:4px 8px calc(4px + env(safe-area-inset-bottom));border:0;border-top:1px solid var(--line);overflow:visible}
  aside .brand,aside .aside-note{display:none}
  aside nav{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:4px;margin:0;padding:0}
- aside nav a{display:grid;justify-items:center;gap:0;height:52px;align-content:center;padding:3px 4px;white-space:normal;font-size:12px}
+ aside nav a{display:grid;justify-items:center;gap:0;height:52px;align-content:center;padding:3px 0;white-space:normal;font-size:12px}
  aside nav a span{font-size:18px;line-height:1.2}
  .workspace{margin:0;padding-bottom:calc(62px + env(safe-area-inset-bottom))}
  header{padding:8px 10px;min-height:45px;font-size:12px}
