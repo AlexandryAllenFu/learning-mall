@@ -6,9 +6,12 @@
   <meta name="referrer" content="no-referrer">
   <meta name="theme-color" content="#f7f8fb">
   <title>全部课程 DDL · Learning Mall</title>
-  <link rel="stylesheet" href="planner.css">
+  <link rel="stylesheet" href="planner.css?v=insights1">
   <script defer src="../deadline-calendar.js"></script>
-  <script defer src="planner.js"></script>
+  <script defer src="private-plan.js"></script>
+  <script defer src="study-reminders.js"></script>
+  <script defer src="ddl-insights.js"></script>
+  <script defer src="planner.js?v=insights1"></script>
 </head>
 <body>
   <header class="site-header"><nav aria-label="学习室导航"><a class="brand" href="../">Learning Mall</a><a href="../#next">微积分</a><a href="../algebra/#next">线性代数</a><a href="./" aria-current="page">全部课程 DDL</a></nav></header>
@@ -17,6 +20,23 @@
       <div><h1>全部课程 DDL</h1><p>把作业、考试和注册事项放在一张表里。时间统一显示为北京时间。</p></div>
       <button type="button" class="primary" id="add-task">添加任务</button>
     </div>
+
+    <section class="insights" id="study-plan" aria-labelledby="insights-title">
+      <div class="insights-header">
+        <div><h2 id="insights-title">待办与学习计划</h2><p id="insights-summary" class="fine"></p></div>
+        <button id="study-notify" type="button">开启网页通知</button>
+      </div>
+      <p id="study-plan-status" role="status" hidden></p>
+      <p id="study-notify-status" class="fine">网页开启时会按计划时间和 DDL 提醒。锁屏或关闭网页后，请用日历提醒。</p>
+      <div class="insights-metrics" id="insights-metrics"></div>
+      <div class="insights-legend"><span data-type="due">截止</span><span data-type="practice">学习计划</span></div>
+      <div class="insights-days" id="insights-days" role="group" aria-label="未来七天的待办分布"></div>
+      <div class="insights-detail">
+        <h3 id="insights-day-title"></h3>
+        <div id="insights-day-items"></div>
+      </div>
+      <details class="insights-history" id="study-all" hidden><summary>查看完整学习计划</summary><div id="study-all-items"></div></details>
+    </section>
 
     <section class="overview" aria-label="任务进度">
       <article class="progress-card"><h2>整体进度</h2><p id="completion-count">等待载入</p><progress id="completion" value="0" max="1" aria-label="已完成任务比例"></progress></article>

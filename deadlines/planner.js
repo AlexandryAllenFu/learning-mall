@@ -181,6 +181,9 @@
 
   function render() {
     const now = Date.now(), all = allRecords(), pending = all.filter(t => !t.done).sort((a,b) => plan(a).targetAt - plan(b).targetAt);
+    DDLInsights.render(pending.map(record => ({
+      id:record.id, title:record.title, course:record.course, dateOnly:datePattern.test(record.due), ...plan(record)
+    })), now);
     const done = all.length - pending.length;
     $('completion-count').textContent = all.length ? '已完成 ' + done + ' / ' + all.length + ' 项' : '还没有任务';
     $('completion').max = all.length || 1;
