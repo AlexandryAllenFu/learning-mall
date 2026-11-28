@@ -1,0 +1,14 @@
+{
+  "id": "./",
+  "name": "MTH026 · 微积分学习室",
+  "short_name": "MTH026 微积分",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "theme_color": "#f7f7f5",
+  "background_color": "#f7f7f5",
+  "icons": [
+    {"src":"calculus-192.png","sizes":"192x192","type":"image/png"},
+    {"src":"calculus-512.png","sizes":"512x512","type":"image/png"}
+  ]
+}
