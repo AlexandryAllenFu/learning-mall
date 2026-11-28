@@ -49,7 +49,7 @@ globalThis.DDLInsights = (() => {
     button.textContent = enabled ? '关闭网页通知' : '开启网页通知';
     $('study-notify-status').textContent = enabled ? '网页通知已开启。关闭网页后可用已设置的日历提醒。' : ({
       denied:'浏览器通知已被阻止。可在网站权限里打开通知后刷新。',
-      unsupported:'此浏览器无法在此页面发送系统通知。页面仍显示提醒，关闭网页后可用日历提醒。'
+      unsupported:'此浏览器暂不能发送网页通知。iPhone 可从主屏幕打开本页，再开启通知。'
     })[permission] || '网页开启时可接收学习计划和 DDL 通知。关闭网页后可用日历提醒。';
   }
 
@@ -104,6 +104,9 @@ globalThis.DDLInsights = (() => {
     const done = completed.has(session.id);
     const summary = node('small', dateTime(session.start) + '–' + time(session.end) + ' · ' + session.course +
       (done ? ' · 已完成' : session.end <= now ? ' · 时段已过' : ''));
+    if (!done && session.end > now && session.reminders.length) {
+      summary.textContent += ' · ' + session.reminders.map(lead=>lead ? '提前 ' + lead + ' 分钟' : '开始时').join('、') + '提醒';
+    }
     const steps = node('ol');
     steps.append(...session.steps.map(step => node('li',step)));
     const button = node('button',done?'恢复待办':'标为完成',{type:'button'});
