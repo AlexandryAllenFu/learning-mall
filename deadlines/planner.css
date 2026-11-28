@@ -66,6 +66,7 @@ td strong { display: block }
 .source-links a:hover { background: #f3f6fd }
 #import-form { display: flex; flex-wrap: wrap; align-items: end; gap: .7rem }
 #import-form label { max-width: 100% }
+#import-form input[type="file"] { min-width: 0; width: 100% }
 details { margin-top: .8rem }
 summary { cursor: pointer; color: var(--blue) }
 .notice { min-height: 1.6em; margin-top: .8rem }
